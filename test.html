@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Dev Feed</title>
+        <script src="jquery.js"></script>
+        <script src="underscore.js"></script>
+        <script>
+            (function() {
+                var sock = null;
+                var wsuri = "ws://localhost:9000";
+
+                window.onload = function() {
+                    sock = new WebSocket(wsuri);
+
+                    sock.onopen = function() {
+                        console.log("connected to " + wsuri);
+                    };
+
+                    sock.onclose = function(e) {
+                        console.log("connection closed (" + e.code + ")");
+                    };
+
+                    sock.onmessage = function(e) {
+                        var data = $.parseJSON(e.data),
+                            $el = createRow(data.type, data.data);
+                        $('#feed').prepend($el);
+                    };
+                };
+
+                function createRow(type, data) {
+                    var tpl = $('#' + type).html(),
+                        rendered = _.template(tpl, data);
+
+                    return $('<div class="row"></div>').html(rendered);
+                }
+            })();
+        </script>
+    </head>
+    <body>
+        <div id="feed">
+
+        </div>
+
+        <!-- various templates -->
+        <script id="github" type="text/template">
+            <%= username %> commited something.
+        </script>
+        <script id="trello" type="text/template">
+
+        </script>
+        <script id="jenkins" type="text/template">
+
+        </script>
+        <script id="jira" type="text/template">
+
+        </script>
+    </body>
+</html>
