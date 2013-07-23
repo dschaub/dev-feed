@@ -4,28 +4,28 @@
         <title>Dev Feed</title>
         <script src="jquery.js"></script>
         <script src="underscore.js"></script>
+        <script src="autobahn.min.js"></script>
         <script>
-            (function() {
-                var sock = null;
-                var wsuri = "ws://localhost:9000";
+            $(function() {
+                var server = 'ws://localhost:9000',
+                    session = null;
 
-                window.onload = function() {
-                    sock = new WebSocket(wsuri);
+                ab.connect(server,
+                    function(sess) {
+                        session = sess;
+                        session.prefix("nerds", "http://example.com/");
+                        session.subscribe("nerds:github", onEvent);
+                        console.log('connected');
+                    },
+                    function(code, reason) {
+                        console.log(code + " " + reason);
+                    }
+                );
 
-                    sock.onopen = function() {
-                        console.log("connected to " + wsuri);
-                    };
-
-                    sock.onclose = function(e) {
-                        console.log("connection closed (" + e.code + ")");
-                    };
-
-                    sock.onmessage = function(e) {
-                        var data = $.parseJSON(e.data),
-                            $el = createRow(data.type, data.data);
-                        $('#feed').prepend($el);
-                    };
-                };
+                function onEvent(uri, e) {
+                    console.log(uri);
+                    console.log(e);
+                }
 
                 function createRow(type, data) {
                     var tpl = $('#' + type).html(),
@@ -33,7 +33,7 @@
 
                     return $('<div class="row"></div>').html(rendered);
                 }
-            })();
+            });
         </script>
     </head>
     <body>

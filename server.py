@@ -10,7 +10,7 @@ from autobahn.wamp import WampServerFactory, WampServerProtocol
 
 class PubSubServer(WampServerProtocol):
     def onSessionOpen(self):
-        self.registerForPubSub('github')
+        self.registerForPubSub('http://example.com/github')
 
 if __name__ == '__main__':
     log.startLogging(sys.stdout)
